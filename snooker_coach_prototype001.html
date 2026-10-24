@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123d2b">
+<title>Snooker Coach — prototype</title>
+<style>
+:root{--green:#123d2b;--green2:#1d6244;--cream:#f7f5ed;--gold:#e7c66b;--ink:#17251e;--muted:#65736b;--red:#b73535}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:var(--green);color:white;padding:22px 18px 20px}header .eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.13em;color:#d9e8df}h1{font-size:27px;margin:5px 0}header p{margin:4px 0 0;color:#e2eee6;font-size:14px}
+main{max-width:680px;margin:auto;padding:16px;display:grid;gap:14px}.card{background:white;border-radius:18px;padding:17px;box-shadow:0 2px 12px #122e1d0c;border:1px solid #e8e9e2}
+h2{font-size:18px;margin:0 0 12px}.sub{font-size:13px;color:var(--muted);margin:-5px 0 12px}
+label{display:block;font-weight:600;font-size:14px;margin:10px 0 5px}input,select{width:100%;padding:12px;border:1px solid #cbd5cc;border-radius:10px;background:#fff;font:inherit;color:var(--ink)}
+button{border:0;border-radius:12px;padding:12px 14px;font:600 15px inherit;cursor:pointer}button:focus,input:focus,select:focus{outline:3px solid #e7c66b88;outline-offset:1px}.primary{background:var(--green2);color:white;width:100%;margin-top:12px}.secondary{background:#eaf1eb;color:var(--green)}.danger{background:#f8e8e6;color:var(--red)}.row{display:flex;gap:8px}.row>*{flex:1}.scorebox{background:var(--green);color:white;border-radius:15px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}.scorebox small{display:block;color:#d4e5da}.score{font-size:38px;font-weight:750;line-height:1.1}.pill{background:#ffffff1c;padding:7px 10px;border-radius:99px;font-size:12px}
+.actiongrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.actiongrid button{min-height:52px}.actiongrid .pot{background:#e2f2e7;color:#175a35}.actiongrid .miss{background:#f8e8e6;color:#a62d2d}.actiongrid .other{background:#f2f0e7;color:#554b2c}.line{height:1px;background:#edf0eb;margin:14px 0}.event{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf0eb;font-size:14px}.event:last-child{border:0}.empty{color:var(--muted);font-size:14px;padding:8px 0}.historyitem{border:1px solid #e6ebe5;border-radius:12px;padding:12px;margin-top:9px}.historyitem strong{display:block}.historyitem small{color:var(--muted)}.historyscore{float:right;font-size:22px;font-weight:750;color:var(--green)}.notice{font-size:13px;color:var(--muted);line-height:1.5}.tiny{font-size:12px;color:var(--muted)}footer{text-align:center;padding:4px 18px 26px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">Eerste werkende basis · versie 0.1</div><h1>🎱 Snooker Coach</h1><p>Oefeningen, scores en trainingsgeschiedenis op één plek.</p></header>
+<main>
+<section class="card">
+<h2>1. Kies je oefening</h2>
+<label for="exercise">Oefening</label>
+<select id="exercise">
+<option value="Rode ballen">Rode ballen — 1 punt per pot</option>
+<option value="Kleurenreeks">Kleurenreeks — geel t/m zwart</option>
+<option value="Vrije training">Vrije training — score zelf invoeren</option>
+</select>
+<label for="sessionName">Naam van je training (optioneel)</label>
+<input id="sessionName" placeholder="Bijv. Positiespel maandag">
+<button class="primary" id="startBtn">Start nieuwe training</button>
+</section>
+<section class="card">
+<h2>2. Live scorebord</h2>
+<div class="scorebox"><div><small>Huidige sessiescore</small><div class="score" id="score">0</div></div><span class="pill" id="status">Geen actieve training</span></div>
+<div class="actiongrid">
+<button class="pot" id="redPot">+ Rode bal · 1 punt</button>
+<button class="pot" id="yellowPot">+ Geel · 2 punten</button>
+<button class="pot" id="greenPot">+ Groen · 3 punten</button>
+<button class="pot" id="brownPot">+ Bruin · 4 punten</button>
+<button class="pot" id="bluePot">+ Blauw · 5 punten</button>
+<button class="pot" id="pinkPot">+ Roze · 6 punten</button>
+<button class="pot" id="blackPot">+ Zwart · 7 punten</button>
+<button class="miss" id="missBtn">Mis / geen pot · 0</button>
+</div>
+<div class="row" style="margin-top:10px"><button class="secondary" id="undoBtn">Laatste actie ongedaan</button><button class="danger" id="finishBtn">Training beëindigen</button></div>
+<p class="notice" style="margin-bottom:0">Dit is voorlopig handmatige score-invoer. De app filmt en herkent ballen nog niet automatisch; dat wordt de volgende module.</p>
+</section>
+<section class="card">
+<h2>3. Acties in deze training</h2>
+<div id="events" class="empty">Start een training om acties te registreren.</div>
+</section>
+<section class="card">
+<h2>4. Eerdere trainingen</h2>
+<p class="sub">Opgeslagen op dit toestel in deze browser.</p>
+<div id="history" class="empty">Nog geen trainingen opgeslagen.</div>
+<div class="line"></div><button class="secondary" id="exportBtn" style="width:100%">Exporteer trainingsgeschiedenis (JSON)</button>
+<p class="tiny">Tip: exporteer af en toe een back-up. Browsergegevens kunnen verdwijnen als je ze wist.</p>
+</section>
+</main>
+<footer>Snooker Coach · prototype voor iPhone · geen account nodig</footer>
+<script>
+const $=id=>document.getElementById(id);
+const points={red:1,yellow:2,green:3,brown:4,blue:5,pink:6,black:7,miss:0};
+const labels={red:"Rode bal gepot",yellow:"Geel gepot",green:"Groen gepot",brown:"Bruin gepot",blue:"Blauw gepot",pink:"Roze gepot",black:"Zwart gepot",miss:"Mis / geen pot"};
+let current=null, history=[];
+try{history=JSON.parse(localStorage.getItem("snookerCoachHistory")||"[]")}catch(e){history=[]}
+function saveHistory(){try{localStorage.setItem("snookerCoachHistory",JSON.stringify(history))}catch(e){alert("Opslaan lukte niet. Exporteer je geschiedenis als back-up.")}}
+function total(s){return s.events.reduce((n,e)=>n+e.points,0)}
+function render(){
+ $("score").textContent=current?total(current):"0";
+ $("status").textContent=current?"Training actief":"Geen actieve training";
+ $("events").innerHTML="";
+ if(!current||!current.events.length){$("events").className="empty";$("events").textContent=current?"Nog geen acties. Registreer je eerste pot.":"Start een training om acties te registreren."}
+ else{$("events").className="";[...current.events].reverse().forEach((e,i)=>{const d=document.createElement("div");d.className="event";d.innerHTML="<span>"+(current.events.length-i)+". "+e.label+"</span><strong>"+(e.points>0?"+"+e.points:"0")+"</strong>";$("events").appendChild(d)})}
+ $("history").innerHTML="";
+ if(!history.length){$("history").className="empty";$("history").textContent="Nog geen trainingen opgeslagen."}
+ else{$("history").className="";history.slice().reverse().forEach(s=>{const d=document.createElement("div");d.className="historyitem";const date=new Date(s.endedAt||s.startedAt).toLocaleString("nl-BE");d.innerHTML='<span class="historyscore">'+total(s)+' ptn</span><strong></strong><small></small><div class="tiny">'+s.events.length+' acties</div>';d.querySelector("strong").textContent=s.name;d.querySelector("small").textContent=s.exercise+" · "+date;$("history").appendChild(d)})}
+}
+$("startBtn").onclick=()=>{if(current&&!confirm("Je huidige training is nog bezig. Sla die eerst op of begin toch opnieuw?"))return;
+ if(current){alert("Beëindig de huidige training eerst om niets kwijt te raken.");return}
+ current={id:Date.now(),name:$("sessionName").value.trim()||$("exercise").value,exercise:$("exercise").value,startedAt:new Date().toISOString(),events:[]};render()};
+function add(key){if(!current){alert("Start eerst een training.");return}current.events.push({key,label:labels[key],points:points[key],at:new Date().toISOString()});render()}
+$("redPot").onclick=()=>add("red");$("yellowPot").onclick=()=>add("yellow");$("greenPot").onclick=()=>add("green");$("brownPot").onclick=()=>add("brown");$("bluePot").onclick=()=>add("blue");$("pinkPot").onclick=()=>add("pink");$("blackPot").onclick=()=>add("black");$("missBtn").onclick=()=>add("miss");
+$("undoBtn").onclick=()=>{if(current&&current.events.length){current.events.pop();render()}};
+$("finishBtn").onclick=()=>{if(!current){alert("Er is geen actieve training.");return}current.endedAt=new Date().toISOString();history.push(current);saveHistory();current=null;render();alert("Training opgeslagen op dit toestel.")};
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(history,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="snooker-trainingen.json";a.click();URL.revokeObjectURL(url)};
+render();
+</script>
+</body></html>
